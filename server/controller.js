@@ -14,9 +14,10 @@ module.exports = {
         let { username, password } = req.body;
 
         let user = await db.select_login_appuser([username, password]);
+        req.session.user = user
 
         if (user[0]) {
-            res.status(200).send(user);
+            res.status(200).send(req.session.user);
         } else {
             res.status(401).send("Unh unh unh...");
         }
@@ -30,11 +31,11 @@ module.exports = {
 
         if (userposts === "true" && search) {
             posts = await db.select_posts_user_withsearch([`%${search}%`]);
-        } else if(userposts === "true" && search === undefined) {
+        } else if(userposts === "true" && (search === undefined || search === "")) {
             posts = await db.select_posts_user_nosearch();
         } else if(userposts === "false" && search) {
             posts = await db.select_posts_otherusers_withsearch([userId, `%${search}%`]);
-        } else if(userposts === "false" && search === undefined) {
+        } else if(userposts === "false" && (search === undefined || search === "")) {
             posts = await db.select_posts_otherusers_nosearch([userId]);
         }
 

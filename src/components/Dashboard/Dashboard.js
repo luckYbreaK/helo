@@ -1,6 +1,6 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import axios from 'axios';
-import {connect} from "react-redux";
+import { connect } from "react-redux";
 
 class Dashboard extends Component {
     constructor() {
@@ -14,11 +14,14 @@ class Dashboard extends Component {
 
         this.getPosts = this.getPosts.bind(this);
     }
+    componentDidMount() {
+        this.getPosts();
+    }
 
     handleChange(val) {
         this.setState({
             search: val
-        }); 
+        });
     }
 
     toggleCheckBox() {
@@ -28,31 +31,41 @@ class Dashboard extends Component {
     }
 
     getPosts() {
-        let {userId} = this.props;
-        axios.get("/api/posts/:userid");
+        let { userId } = this.props;
+        let { userposts, search } = this.state;
+        axios.get(`/api/posts/${userId}?userposts=${userposts}&search=${search}`).then(res => {
+            this.setState({
+                posts: res.data
+            });
+        });
     }
 
     render() {
+        console.log(this.state.posts);
+
         let mappedPosts = this.state.posts.map((post, i) => {
-            <div key={i}>
-                <p>{post.title}</p>
-                <p>{post.username}</p>
-                <p>{post.profile_pic}</p>
-            </div>
+            return (
+                <div key={i}>
+                <div>Title:{post.title}     by: {post.username} <img src={post.profile_pic} alt="user pic" style={{height: "50px", width: "auto"}}/></div>
+                </div>
+                
+            );
+
         })
-        return(
+        return (
             <div>
-                <input 
-                type="text"
-                placeholder="Search by Title"
-                onChange={(e) => this.handleChange(e.target.value)} 
+                <input
+                    type="text"
+                    placeholder="Search by Title"
+                    onChange={(e) => this.handleChange(e.target.value)}
                 />
-                <button>Search</button>
+                <button onClick={this.getPosts}>Search</button>
                 <button>Reset</button>
-                My Posts<input 
-                type="checkbox"
-                onClick={() => this.toggleCheckBox()}
+                My Posts<input
+                    type="checkbox"
+                    onClick={() => this.toggleCheckBox()}
                 />
+                {mappedPosts}
             </div>
         );
     }
