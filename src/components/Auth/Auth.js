@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import {Link} from "react-router-dom";
 import axios from "axios";
 
 class Auth extends Component {
@@ -13,6 +12,7 @@ class Auth extends Component {
 
         this.handleChange = this.handleChange.bind(this);
         this.register = this.register.bind(this);
+        this.login = this.login.bind(this);
     }
 
     handleChange(inputField, val) {       
@@ -33,13 +33,18 @@ class Auth extends Component {
     }
 
     login() {
-
+        let {username, password} = this.state;
+        axios.post("/api/auth/login", {username, password}).then(res => {
+            if(res.data) {
+                window.location = "http://localhost:3000/#/dashboard";
+            }      
+        })
     }
 
     register() {
         let {username, password} = this.state
         axios.post("/api/auth/register", {username,password}).then(res => {
-            console.log(res.data);    
+            window.location = "http://localhost:3000/#/dashboard";
         });
     }
 
@@ -63,8 +68,8 @@ class Auth extends Component {
                     />
                 </div>
                 <div>
-                    <button>Login</button>
-                    <Link to="/dashboard"><button onClick={this.register}>Register</button></Link>
+                    <button onClick={this.login}>Login</button>
+                    <button onClick={this.register}>Register</button>
                 </div>
 
             </div>
