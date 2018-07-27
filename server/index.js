@@ -15,6 +15,8 @@ app.use(bodyParser.json());
 // ENDPOINTS
 app.post("/api/auth/register", controller.registerUser);
 app.post("/api/auth/login", controller.loginUser)
+app.get("/api/posts/:userid", controller.getPosts)
+// app.get("/api/post/:postid")
 
 massive(CONNECTION_STRING).then(db => {
     app.set("db", db);
